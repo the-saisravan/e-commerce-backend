@@ -129,6 +129,39 @@ app.put("/update/:productId", userAuthenticate, async(req, res) => {
     }
 })
 
+//get cart contents
+app.length("/", userAuthenticate, async(req,res)=>{
+    const userId = req.user.id;
+    try{
+        const userCart = await CartModel.findOne({user: userId}).populate("items.product");
+    if(!userCart || userCart.items.length === 0){
+        return res(200).json({message:"user cart is empty", cart:{items:[], totalPrice: 0}});
+    }
+    return res.status(200).json({message:"fetched user cart details successfully", userCart});
+    }
+    catch(err){
+        return res.status(500).json({message:"could not load user cart details", err});
+    }
+})
+
+//clear entire cart
+app.delete("/clear", userAuthenticate, async(req,res)=>{
+    try{
+        const userId = req.user.id;
+        const userCart = await CartModel.findOne({user: userId});
+        if(!userCart){
+            return res.status(404).json({message:"user cart not found"});
+        }
+        userCart.items= [];
+        userCart.totalPrice=0;
+        userCart.save();
+        return res.status(200).json({message: "cleared entire cart successfully"});
+    }
+    catch(err){
+        return res.status(500).json({message:"could not clear user cart contents", err});
+    }
+})
+
 
 
 
