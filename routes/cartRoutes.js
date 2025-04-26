@@ -1,10 +1,10 @@
 import express from 'express'
-import { CartModel } from '../models/cart';
-import { userAuthenticate } from '../middleware/userMiddleware';
-import { ProductModel } from '../models/product';
+import { CartModel } from '../models/cart.js';
+import { userAuthenticate } from '../middleware/userMiddleware.js';
+import { ProductModel } from '../models/product.js';
 
-const app = express;
-app.use(express.json());
+const app = express()
+app.use(express.json())
 
 //add item to cart
 app.post("/cart/add", userAuthenticate, async (req, res) => {
@@ -130,7 +130,7 @@ app.put("/update/:productId", userAuthenticate, async(req, res) => {
 })
 
 //get cart contents
-app.length("/", userAuthenticate, async(req,res)=>{
+app.get("/", userAuthenticate, async(req,res)=>{
     const userId = req.user.id;
     try{
         const userCart = await CartModel.findOne({user: userId}).populate("items.product");
